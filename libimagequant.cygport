@@ -1,0 +1,36 @@
+NAME="libimagequant"
+VERSION=2.10.0
+RELEASE=1
+CATEGORY="Libs"
+SUMMARY="Image Quantization Library"
+DESCRIPTION="Small, portable C library for high-quality conversion of RGBA
+images to 8-bit indexed-color (palette) images."
+HOMEPAGE="https://pngquant.org/lib/"
+SRC_URI="https://github.com/ImageOptim/libimagequant/archive/${VERSION}/libimagequant-${VERSION}.tar.gz"
+
+PKG_NAMES="libimagequant0 libimagequant-devel"
+libimagequant0_CONTENTS="
+	usr/bin/cygimagequant-0.dll
+	usr/share/doc/${NAME}
+"
+libimagequant_devel_CONTENTS="
+	usr/include/libimagequant.h
+	usr/lib/libimagequant.dll.a
+"
+
+src_compile() {
+	lndirs
+	cd ${B}
+	./configure --prefix=/usr --with-openmp
+	cygmake dll \
+		DLL="cygimagequant-\$(SOVER).dll" \
+		DLLIMP=libimagequant.dll.a \
+		DLLDEF=libimagequant.def
+}
+
+src_install() {
+	cd ${B}
+	dobin cygimagequant-0.dll
+	doinclude libimagequant.h
+	dolib libimagequant.dll.a
+}
